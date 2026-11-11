@@ -1,0 +1,24 @@
+:root{--bg:#f4f6fb;--card:#fff;--text:#16213a;--muted:#6b7692;--brand:#f5a300;--line:#e2e7f1;--ok:#1f9d63;--err:#d64545}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1424;--card:#172038;--text:#eef1f9;--muted:#9aa5c3;--line:#2a3556}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Cairo',Tahoma,Arial,sans-serif;line-height:1.6}
+.hero{background:linear-gradient(135deg,#16213a,#24366b);color:#fff;text-align:center;padding:36px 20px 64px}
+.hero h1{margin:0;font-size:1.9rem}.hero span{color:var(--brand)}
+.wrap{max-width:560px;margin:-40px auto 40px;padding:0 16px}
+.wrap.wide{max-width:960px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.08);overflow-x:auto}
+label{display:block;font-weight:600;margin:14px 0 6px}
+input[type=text],input[type=tel],input[type=email],input[type=password],select{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--text);font:inherit}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.opts.two{grid-template-columns:repeat(2,1fr)}
+.opt input{position:absolute;opacity:0}
+.opt span{display:block;text-align:center;padding:12px 6px;border:1.5px solid var(--line);border-radius:12px;cursor:pointer;font-weight:600;background:var(--bg)}
+.opt span b{display:block;font-size:1.6rem;font-weight:400}
+.opt input:checked+span{border-color:var(--brand);background:rgba(245,163,0,.15)}
+button{width:100%;margin-top:20px;padding:13px;border:0;border-radius:12px;background:var(--brand);color:#1a1a1a;font:inherit;font-weight:800;cursor:pointer}
+button.sm{width:auto;margin:0;padding:6px 12px;background:var(--err);color:#fff}
+.msg{margin-top:12px;font-weight:600}.ok{color:var(--ok)}.err{color:var(--err)}
+table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.stat b{display:block;font-size:1.6rem;color:var(--brand)}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}

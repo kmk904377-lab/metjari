@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>استبيان المزارعين</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>.hero{background:linear-gradient(135deg,#14532d,#2f7d4f)}.hero span{color:#c9f27a}
+button{background:#2f7d4f;color:#fff}.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{padding:6px 12px;border:1.5px solid var(--line);border-radius:20px;cursor:pointer;background:var(--bg)}
+.done{text-align:center;padding:30px 10px}.done b{font-size:3rem;display:block}</style></head><body>
+<header class="hero"><h1>ازرع <span>منزلك</span> 🌱</h1><p>املأ هذا الاستبيان القصير قبل أن نبدأ</p></header>
+<main class="wrap"><div class="card" id="form">
+<label for="name">الاسم</label><input type="text" id="name" autocomplete="name">
+<label for="tribe">اسم القبيلة</label><input type="text" id="tribe">
+<label for="crop">ماذا ستزرع؟</label><input type="text" id="crop" placeholder="مثال: طماطم، نعناع، نخيل...">
+<div class="chips" id="chips"></div>
+<label for="wa">رقم واتساب</label><input type="tel" id="wa" dir="ltr" style="text-align:right" placeholder="09XXXXXXXX">
+<button id="send">إرسال</button><div class="msg" id="msg"></div></div>
+<div class="card done" id="done" hidden><b>✅</b><h2>شكرًا لك!</h2><p>تم استلام بياناتك، وسنتواصل معك عند الانتهاء من التطبيق.</p></div></main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+['خضروات','أعشاب','أشجار مثمرة','نخيل','زهور','ورقيات'].forEach(t=>{
+  const c=document.createElement('span');c.className='chip';c.textContent=t;
+  c.onclick=()=>$('crop').value=t;$('chips').appendChild(c)});
+const say=(t,c)=>{$('msg').textContent=t;$('msg').className='msg '+c};
+$('send').onclick=async()=>{
+  const v={name:$('name').value.trim(),tribe:$('tribe').value.trim(),crop:$('crop').value.trim(),whatsapp:$('wa').value.trim()};
+  if(v.name.length<3||!v.tribe||!v.crop)return say('أكمل جميع الحقول','err');
+  if(!/^[0-9+\s]{9,15}$/.test(v.whatsapp))return say('رقم الواتساب غير صحيح','err');
+  try{
+    v.createdAt=firebase.firestore.FieldValue.serverTimestamp();
+    await db.collection('farmers').add(v);
+    $('form').hidden=true;$('done').hidden=false;
+  }catch(e){say('تعذر الإرسال، حاول مجددًا','err')}
+};
+</script></body></html>

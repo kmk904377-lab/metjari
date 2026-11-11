@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>لوحة التحكم</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css"></head><body>
+<header class="hero"><h1>لوحة <span>التحكم</span></h1><p>المتقدمون من السائقين</p></header>
+<main class="wrap" id="login"><div class="card">
+<label for="em">البريد الإلكتروني</label><input type="email" id="em" dir="ltr">
+<label for="pw">كلمة المرور</label><input type="password" id="pw" dir="ltr">
+<button id="in">دخول</button><div class="msg err" id="lm"></div></div></main>
+<main class="wrap wide" id="panel" hidden>
+<div class="stats"><div class="stat"><b id="s0">0</b>الكل</div><div class="stat"><b id="s1">0</b>تاكسي</div>
+<div class="stat"><b id="s2">0</b>نقل بضائع</div><div class="stat"><b id="s3">0</b>سيارة سحب</div></div>
+<div class="card">
+<select id="flt"><option value="">كل الأنواع</option><option>تاكسي</option><option>نقل بضائع</option><option>سيارة سحب</option></select>
+<table><thead><tr><th>الاسم</th><th>الهاتف</th><th>الخدمة</th><th>الجنس</th><th>التاريخ</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+<button id="out" style="background:var(--line);color:var(--text)">تسجيل خروج</button></div></main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+let all=[],unsub=null;const $=id=>document.getElementById(id);
+const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
+$('in').onclick=()=>auth.signInWithEmailAndPassword($('em').value,$('pw').value).catch(()=>$('lm').textContent='بيانات الدخول غير صحيحة');
+$('out').onclick=()=>auth.signOut();
+$('flt').onchange=render;
+auth.onAuthStateChanged(u=>{
+  $('login').hidden=!!u;$('panel').hidden=!u;
+  if(unsub){unsub();unsub=null}
+  if(u)unsub=db.collection('drivers').orderBy('createdAt','desc').onSnapshot(s=>{all=s.docs.map(d=>({id:d.id,...d.data()}));render()});
+});
+function render(){
+  const f=$('flt').value,list=f?all.filter(d=>d.type===f):all;
+  $('s0').textContent=all.length;
+  ['تاكسي','نقل بضائع','سيارة سحب'].forEach((t,i)=>$('s'+(i+1)).textContent=all.filter(d=>d.type===t).length);
+  $('rows').innerHTML=list.map(d=>`<tr><td>${esc(d.name)}</td><td dir="ltr"><a href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td>${esc(d.type)}</td><td>${esc(d.gender)}</td><td>${d.createdAt?d.createdAt.toDate().toLocaleDateString('ar'):''}</td><td><button class="sm" data-id="${d.id}">حذف</button></td></tr>`).join('')||'<tr><td colspan="6">لا يوجد متقدمون</td></tr>';
+  document.querySelectorAll('button.sm').forEach(b=>b.onclick=()=>confirm('حذف هذا السائق؟')&&db.collection('drivers').doc(b.dataset.id).delete());
+}
+</script></body></html>
